@@ -1,0 +1,216 @@
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/michaelsanders/Documents/Homelessness QED/Lifelong_Links_CEM.log
+  log type:  text
+ opened on:  11 Jan 2023, 19:28:14
+
+. keep if year==2021
+(1,609 observations deleted)
+
+. tab year
+
+       Year |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2021 |        309      100.00      100.00
+------------+-----------------------------------
+      Total |        309      100.00
+
+. **First stab
+. cem oldercl change5_21p change4_21p change3_21p change2_21p change1_21p employmentscore incomescore IDACIscore, treatment(lifelonglinks) 
+
+Matching Summary:
+-----------------
+Number of strata: 196
+Number of matched strata: 14
+
+             0    1
+      All  287   22
+  Matched   43   14
+Unmatched  244    8
+
+
+Multivariate L1 distance: .81190476
+
+Univariate imbalance:
+
+                       L1      mean       min       25%       50%       75%       max
+        oldercl    .04643    .25833         0         0        -1         2         0
+    change5_21p   6.9e-17  -1.1e-16         0         0         0         0         .
+    change4_21p   6.9e-17  -1.1e-16         0         0         0         0         .
+    change3_21p   9.0e-17   -.04522   -.01754    .13333         0         0         .
+    change2_21p    .12976   -.08088         0    -.0625         0   -.41667         .
+    change1_21p    .10119   -.18249         0   -.43333       -.2   -.15385         .
+employmentscore    .07143   -.00304      .006     -.002     -.008     -.009     -.001
+    incomescore   5.6e-17     .0002      .006     -.002     -.005      .002     -.004
+     IDACIscore    .02381    .00086      .007      .005     -.008      .006      .005
+
+. **Outcomes**
+. local outcomes youngpersonaged1617years careleaveraged1820years vulnerableasaresultofhavingbeeni
+
+. foreach x of local outcomes{
+  2. reg `x' lifelonglinks careleavers21plus if cem_matched==1
+  3. }
+
+      Source |       SS           df       MS      Number of obs   =        57
+-------------+----------------------------------   F(2, 54)        =      3.77
+       Model |   518.66902         2   259.33451   Prob > F        =    0.0293
+    Residual |  3712.83975        54  68.7562917   R-squared       =    0.1226
+-------------+----------------------------------   Adj R-squared   =    0.0901
+       Total |  4231.50877        56  75.5626566   Root MSE        =    8.2919
+
+-----------------------------------------------------------------------------------
+youngpersonaged~s |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+    lifelonglinks |   1.660277   2.555605     0.65   0.519    -3.463403    6.783958
+careleavers21plus |   .7452115   .2758873     2.70   0.009     .1920909    1.298332
+            _cons |   1.610929   1.861878     0.87   0.391    -2.121913     5.34377
+-----------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =        57
+-------------+----------------------------------   F(2, 54)        =     22.40
+       Model |   614.71825         2  307.359125   Prob > F        =    0.0000
+    Residual |  740.860697        54  13.7196425   R-squared       =    0.4535
+-------------+----------------------------------   Adj R-squared   =    0.4332
+       Total |  1355.57895        56  24.2067669   Root MSE        =     3.704
+
+-----------------------------------------------------------------------------------
+careleaveraged1~s |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+    lifelonglinks |  -2.612076   1.141587    -2.29   0.026     -4.90082   -.3233323
+careleavers21plus |   .7580065   .1232386     6.15   0.000     .5109279    1.005085
+            _cons |   2.826619   .8316996     3.40   0.001     1.159162    4.494076
+-----------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =        57
+-------------+----------------------------------   F(2, 54)        =    106.56
+       Model |  2923.80597         2  1461.90298   Prob > F        =    0.0000
+    Residual |  740.860697        54  13.7196425   R-squared       =    0.7978
+-------------+----------------------------------   Adj R-squared   =    0.7903
+       Total |  3664.66667        56  65.4404762   Root MSE        =     3.704
+
+-----------------------------------------------------------------------------------
+vulnerableasare~i |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+    lifelonglinks |  -2.612076   1.141587    -2.29   0.026     -4.90082   -.3233323
+careleavers21plus |   1.758007   .1232386    14.27   0.000     1.510928    2.005085
+            _cons |   2.826619   .8316996     3.40   0.001     1.159162    4.494076
+-----------------------------------------------------------------------------------
+
+. gen matched1 = cem_matched==1
+
+. gen lifelonglinks2 = lifelonglinks==1 & cem_matched==0
+
+. 
+. cem oldercl changeall_21p employmentscore incomescore IDACIscore , treatment(lifelonglinks2) 
+
+Matching Summary:
+-----------------
+Number of strata: 105
+Number of matched strata: 7
+
+             0    1
+      All  301    8
+  Matched   54    8
+Unmatched  247    0
+
+
+Multivariate L1 distance: .91276042
+
+Univariate imbalance:
+
+                      L1     mean      min      25%      50%      75%      max
+        oldercl   .34505   -5.273        0       -3       -9       -4      -10
+  changeall_21p   .28038   .24737   .56522    .2619  -.16667   .67647  -1.6667
+employmentscore   .06944  -.00271     .005    -.011        0    -.008    -.006
+    incomescore     .125  -.00224     .006    -.009        0    -.004    -.007
+     IDACIscore    .0625   .00115     .011    -.003    -.001    -.013    -.004
+
+. foreach x of local outcomes{
+  2. reg `x' lifelonglinks careleavers21plus if cem_matched==1
+  3. }
+
+      Source |       SS           df       MS      Number of obs   =        62
+-------------+----------------------------------   F(2, 59)        =      1.22
+       Model |  233.733328         2  116.866664   Prob > F        =    0.3013
+    Residual |  5631.31506        59  95.4460179   R-squared       =    0.0399
+-------------+----------------------------------   Adj R-squared   =    0.0073
+       Total |  5865.04839        61  96.1483342   Root MSE        =    9.7696
+
+-----------------------------------------------------------------------------------
+youngpersonaged~s |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+    lifelonglinks |  -.3342053   3.054131    -0.11   0.913    -6.445506    5.777096
+careleavers21plus |   .1177939   .0752748     1.56   0.123    -.0328307    .2684185
+            _cons |   5.137952   1.547399     3.32   0.002     2.041613    8.234291
+-----------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =        62
+-------------+----------------------------------   F(2, 59)        =     33.51
+       Model |  3084.11017         2  1542.05509   Prob > F        =    0.0000
+    Residual |  2714.72853        59   46.012348   R-squared       =    0.5318
+-------------+----------------------------------   Adj R-squared   =    0.5160
+       Total |  5798.83871        61  95.0629297   Root MSE        =    6.7832
+
+-----------------------------------------------------------------------------------
+careleaveraged1~s |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+    lifelonglinks |  -2.567954   2.120537    -1.21   0.231    -6.811139    1.675231
+careleavers21plus |   .4263587   .0522647     8.16   0.000     .3217773    .5309401
+            _cons |   5.296612   1.074387     4.93   0.000     3.146768    7.446455
+-----------------------------------------------------------------------------------
+
+      Source |       SS           df       MS      Number of obs   =        62
+-------------+----------------------------------   F(2, 59)        =    372.54
+       Model |  34282.9489         2  17141.4744   Prob > F        =    0.0000
+    Residual |  2714.72853        59   46.012348   R-squared       =    0.9266
+-------------+----------------------------------   Adj R-squared   =    0.9241
+       Total |  36997.6774        61  606.519302   Root MSE        =    6.7832
+
+-----------------------------------------------------------------------------------
+vulnerableasare~i |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+    lifelonglinks |  -2.567954   2.120537    -1.21   0.231    -6.811139    1.675231
+careleavers21plus |   1.426359   .0522647    27.29   0.000     1.321777     1.53094
+            _cons |   5.296612   1.074387     4.93   0.000     3.146768    7.446455
+-----------------------------------------------------------------------------------
+
+. gen matched2 = cem_matched==1
+
+. gen lifelonglinks3 = lifelonglinks==1 & cem_matched==0 & matched1==0
+
+. 
+. *cem  employmentscore incomescore IDACIscore , treatment(lifelonglinks3) 
+. *foreach x of local outcomes{
+. *reg `x' lifelonglinks careleavers21plus if cem_matched==1 
+. *}
+. *gen matched3 = cem_matched==1
+. **Keep only variables for merging**
+. keep matched1 matched2 LAgroup 
+
+. **Save matched dataset
+. save  "Homelessness_QED_lifelonglinks_CEM1.dta", replace
+(note: file Homelessness_QED_lifelonglinks_CEM1.dta not found)
+file Homelessness_QED_lifelonglinks_CEM1.dta saved
+
+. **Merge in outcomes dataset**
+. merge 1:m LAgroup using "Outcomes_clean_QED.dta"
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                            93
+        from master                         0  (_merge==1)
+        from using                         93  (_merge==2)
+
+    matched                             1,825  (_merge==3)
+    -----------------------------------------
+
+. save "lifelonglinks_Analysis.dta", replace
+(note: file lifelonglinks_Analysis.dta not found)
+file lifelonglinks_Analysis.dta saved
+
+. log close 
+      name:  <unnamed>
+       log:  /Users/michaelsanders/Documents/Homelessness QED/Lifelong_Links_CEM.log
+  log type:  text
+ closed on:  11 Jan 2023, 19:28:14
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

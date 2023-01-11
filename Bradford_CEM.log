@@ -1,0 +1,195 @@
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/michaelsanders/Documents/Homelessness QED/Bradford_CEM.log
+  log type:  text
+ opened on:  11 Jan 2023, 19:28:14
+
+. keep if year==2021
+(1,609 observations deleted)
+
+. tab year
+
+       Year |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2021 |        309      100.00      100.00
+------------+-----------------------------------
+      Total |        309      100.00
+
+. **First stab - commented out as first approach yields no matches. 
+. cem oldercl change5_21p change4_21p change3_21p change2_21p change1_21p employmentscore incomescore IDACIscore, treatment(bradford) 
+
+Matching Summary:
+-----------------
+Number of strata: 196
+Number of matched strata: 0
+
+             0    1
+      All  308    1
+  Matched    0    0
+Unmatched  308    1
+
+
+Multivariate L1 distance: 1
+
+Univariate imbalance:
+
+                      L1     mean      min      25%      50%      75%      max
+        oldercl   .91558   12.981       22       20       17        9        .
+    change5_21p   .13636   .13636        0        0        0        0        .
+    change4_21p   .13636   .13636        0        0        0        0        .
+    change3_21p   .66883  -.05168   1.1818   .48182  -.01818  -1.2182        .
+    change2_21p   .42857  -.34371   .88462   .10684  -.11538  -.86538        .
+    change1_21p    .6039   .49166   1.6087   .94203    .6087    .0087        .
+employmentscore   .92532   .04535     .118     .072     .048     .024        .
+    incomescore   .93182   .07348      .16      .11      .08     .041        .
+     IDACIscore   .86364    .0726     .193     .118     .078     .024        .
+
+. **Outcomes**
+. **local outcomes youngpersonaged1617years careleaveraged1820years vulnerableasaresultofhavingbeeni
+. **foreach x of local outcomes{
+. **reg `x' bradford careleavers21plus if cem_matched==1
+. **}
+. gen matched1 = cem_matched==1
+
+. gen bradford2 = bradford==1 & cem_matched==0
+
+. 
+. cem oldercl changeall_21p employmentscore incomescore IDACIscore , treatment(bradford2) 
+(using the scott break method for imbalance)
+
+Matching Summary:
+-----------------
+Number of strata: 105
+Number of matched strata: 0
+
+             0    1
+      All  308    1
+  Matched    0    0
+Unmatched  308    1
+
+
+Multivariate L1 distance: 1
+
+Univariate imbalance:
+
+                      L1     mean      min      25%      50%      75%      max
+        oldercl   .91558   12.981       22       20       17        9        .
+  changeall_21p   .38312   .18158   1.6818   .93182   .43182  -1.3182        .
+employmentscore   .92532   .04535     .118     .072     .048     .024        .
+    incomescore   .93182   .07348      .16      .11      .08     .041        .
+     IDACIscore   .86364    .0726     .193     .118     .078     .024        .
+
+. foreach x of local outcomes{
+  2. *reg `x' bradford careleavers21plus if cem_matched==1
+. }
+
+. gen matched2 = cem_matched==1
+
+. gen bradford3 = bradfordb==1 & cem_matched==0 & matched1==0
+
+. 
+. cem  employmentscore incomescore IDACIscore , treatment(bradford3) 
+(using the scott break method for imbalance)
+
+Matching Summary:
+-----------------
+Number of strata: 57
+Number of matched strata: 1
+
+             0    1
+      All  308    1
+  Matched    1    1
+Unmatched  307    0
+
+
+Multivariate L1 distance: 0
+
+Univariate imbalance:
+
+                    L1   mean    min    25%    50%    75%    max
+employmentscore      0  -.006  -.006  -.006  -.006  -.006  -.006
+    incomescore      0   .003   .003   .003   .003   .003   .003
+     IDACIscore      0   .006   .006   .006   .006   .006   .006
+
+. foreach x of local outcomes{
+  2. reg `x' bradfordb careleavers21plus if cem_matched==1 
+  3. }
+note: bradfordb omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =         2
+-------------+----------------------------------   F(1, 0)         =         .
+       Model |          32         1          32   Prob > F        =         .
+    Residual |           0         0           .   R-squared       =    1.0000
+-------------+----------------------------------   Adj R-squared   =         .
+       Total |          32         1          32   Root MSE        =         0
+
+-----------------------------------------------------------------------------------
+youngpersonaged~s |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+        bradfordb |          0  (omitted)
+careleavers21plus |   .5333333          .        .       .            .           .
+            _cons |  -9.733333          .        .       .            .           .
+-----------------------------------------------------------------------------------
+note: bradfordb omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =         2
+-------------+----------------------------------   F(1, 0)         =         .
+       Model |           8         1           8   Prob > F        =         .
+    Residual |           0         0           .   R-squared       =    1.0000
+-------------+----------------------------------   Adj R-squared   =         .
+       Total |           8         1           8   Root MSE        =         0
+
+-----------------------------------------------------------------------------------
+careleaveraged1~s |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+        bradfordb |          0  (omitted)
+careleavers21plus |   .2666667          .        .       .            .           .
+            _cons |   20.13333          .        .       .            .           .
+-----------------------------------------------------------------------------------
+note: bradfordb omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =         2
+-------------+----------------------------------   F(1, 0)         =         .
+       Model |       180.5         1       180.5   Prob > F        =         .
+    Residual |           0         0           .   R-squared       =    1.0000
+-------------+----------------------------------   Adj R-squared   =         .
+       Total |       180.5         1       180.5   Root MSE        =         0
+
+-----------------------------------------------------------------------------------
+vulnerableasare~i |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+        bradfordb |          0  (omitted)
+careleavers21plus |   1.266667          .        .       .            .           .
+            _cons |   20.13333          .        .       .            .           .
+-----------------------------------------------------------------------------------
+
+. gen matched3 = cem_matched==1
+
+. **Keep only variables for merging**
+. keep matched1 matched2  matched3 LAgroup 
+
+. **Save matched dataset
+. save  "Homelessness_QED_Bradford_CEM1.dta", replace
+file Homelessness_QED_Bradford_CEM1.dta saved
+
+. **Merge in outcomes dataset**
+. merge 1:m LAgroup using "Outcomes_clean_QED.dta"
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                            93
+        from master                         0  (_merge==1)
+        from using                         93  (_merge==2)
+
+    matched                             1,825  (_merge==3)
+    -----------------------------------------
+
+. save "bradford_Analysis.dta", replace
+file bradford_Analysis.dta saved
+
+. log close 
+      name:  <unnamed>
+       log:  /Users/michaelsanders/Documents/Homelessness QED/Bradford_CEM.log
+  log type:  text
+ closed on:  11 Jan 2023, 19:28:14
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
